@@ -1,0 +1,86 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: forum
+  labels:
+    name: forum
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: forum-deployment
+  labels:
+    app: forum-app
+  namespace: forum
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: forum-app
+  template:
+    metadata:
+      labels:
+        app: forum-app
+    spec:
+      containers:
+      - name: forum-bin-container
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"            
+          limits:
+            memory: "512Mi"
+            cpu: "1"
+        image: us-west2-docker.pkg.dev/psychic-karma-401718/main/forum-app:latest
+        ports:
+        - containerPort: 8080
+          name: forum-app-port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: forum-service
+  namespace: forum
+spec:
+  selector:
+    app: forum-app
+  # type: LoadBalancer
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: forum-app-port
+# ---
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: forum-ingress
+#   namespace: forum
+# #  annotations:
+# #    nginx.ingress.kubernetes.io/rewrite-target: /
+# spec:
+#   rules:
+#     - http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: sqrt-service
+#                 port:
+#                   number: 80
+# ---
+# apiVersion: "networking.k8s.io/v1"
+# kind: "Ingress"
+# metadata:
+#   name: "forum-ingress"
+#   namespace: "forum"
+#   annotations: 
+#     kubectl.kubernetes.io/last-applied-configuration: /
+# spec:
+#   defaultBackend:
+#     service:
+#       name: "forum-service"
+#       port:
+#         number: 80
+# status:
+#   loadBalancer: {}
