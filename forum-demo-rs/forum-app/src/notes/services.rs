@@ -1,5 +1,4 @@
 use super::{Note, NoteBase};
-use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 
 pub struct NoteSer {
@@ -34,7 +33,7 @@ impl NoteSer {
     }
 
     pub async fn get_all_notes(&self) -> Option<Vec<Note>> {
-        let res = sqlx::query_as::<_, Note>("SELECT * FROM quotes")
+        let res = sqlx::query_as::<_, Note>("SELECT * FROM notes")
             .fetch_all(&self.pool)
             .await;
         match res {

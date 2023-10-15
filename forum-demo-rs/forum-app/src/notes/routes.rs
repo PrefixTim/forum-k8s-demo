@@ -1,21 +1,19 @@
-use std::sync::Arc;
-
-use axum::extract::{Path, State};
+use axum::extract::State;
 use axum::http::StatusCode;
 use axum::{
     routing::{get, post},
     Json, Router,
 };
 use sqlx::Pool;
+use std::sync::Arc;
 
 use super::{Note, NoteBase, NoteSer};
 
-async fn get_notes(
-    State(serv): State<Arc<NoteSer>>) -> Result<(StatusCode, Json<Vec<Note>>), StatusCode> {
-        match serv.get_all_notes().await {
-            Some(notes) => Ok((StatusCode::CREATED, Json(notes))),
-            None => Err(StatusCode::INTERNAL_SERVER_ERROR),
-        }
+async fn get_notes(State(serv): State<Arc<NoteSer>>) -> Result<Json<Vec<Note>>, StatusCode> {
+    match serv.get_all_notes().await {
+        Some(notes) => Ok(Json(notes)),
+        None => Err(StatusCode::INTERNAL_SERVER_ERROR),
+    }
 }
 
 async fn post_note(
