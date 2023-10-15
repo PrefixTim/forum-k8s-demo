@@ -1,0 +1,11 @@
+**/target
+**/.dockerignore
+**/.env
+**/charts
+**/docker-compose*
+**/compose*
+**/Dockerfile*
+**/secrets.dev.yaml
+**/values.dev.yaml
+LICENSE
+README.md
