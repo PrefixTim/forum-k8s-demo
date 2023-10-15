@@ -1,3 +1,4 @@
+use axum::http::StatusCode;
 use axum::routing::get;
 use axum::{Json, Router};
 use chrono::{DateTime, Local};
@@ -20,6 +21,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     let app = Router::new()
+        .route("/", get(health))
         .route("/time", get(time_json))
         .nest("/notes", notes::router(pool));
 
@@ -39,12 +41,13 @@ fn get_db_url() -> Option<String> {
         return Some(url);
     }
 
-    if let (Ok(psswd), Ok(addr)) = (
-        env::var("DB_PASSWORD"),
-        env::var("DB_ADDR"),
-
-    ) {
-        return Some(format!("postgresql://postgres:{}@{}:{}", psswd, addr, get_env("DB_PORT", "5432")));
+    if let (Ok(psswd), Ok(addr)) = (env::var("DB_PASSWORD"), env::var("DB_ADDR")) {
+        return Some(format!(
+            "postgresql://postgres:{}@{}:{}",
+            psswd,
+            addr,
+            get_env("DB_PORT", "5432")
+        ));
     }
 
     None
@@ -52,4 +55,8 @@ fn get_db_url() -> Option<String> {
 
 async fn time_json() -> Json<DateTime<Local>> {
     Json(chrono::offset::Local::now())
+}
+
+async fn health() -> StatusCode {
+    StatusCode::OK
 }

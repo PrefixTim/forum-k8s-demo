@@ -22,8 +22,8 @@ spec:
       labels:
         app: forum-app
     spec:
-      imagePullSecrets:
-      - name: artifact-registry
+      # imagePullSecrets:
+      # - name: artifact-registry
       containers:
       - name: forum-bin-container
         resources:
@@ -63,38 +63,38 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: forum-app-port
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: forum-ingress
-  namespace: forum
-#  annotations:
-#    nginx.ingress.kubernetes.io/rewrite-target: /
-spec:
-  rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: forum-service
-                port:
-                  number: 80
 # ---
-# apiVersion: "networking.k8s.io/v1"
-# kind: "Ingress"
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
 # metadata:
-#   name: "forum-ingress"
-#   namespace: "forum"
-#   annotations: 
-#     kubectl.kubernetes.io/last-applied-configuration: /
+#   name: forum-ingress
+#   namespace: forum
+# annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
 # spec:
-#   defaultBackend:
-#     service:
-#       name: "forum-service"
-#       port:
-#         number: 80
-# status:
-#   loadBalancer: {}
+#   rules:
+#     - http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: forum-service
+#                 port:
+#                   number: 80
+---
+apiVersion: "networking.k8s.io/v1"
+kind: "Ingress"
+metadata:
+  name: "forum-ingress"
+  namespace: "forum"
+  annotations: 
+    kubectl.kubernetes.io/last-applied-configuration: /
+spec:
+  defaultBackend:
+    service:
+      name: "forum-service"
+      port:
+        number: 80
+status:
+  loadBalancer: {}
